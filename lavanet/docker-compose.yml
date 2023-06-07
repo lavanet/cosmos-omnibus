@@ -1,0 +1,52 @@
+version: '3.4'
+
+services:
+
+  lava-node:
+    #image: ghcr.io/akash-network/cosmos-omnibus:v0.3.34-lavanet-v0.3.0
+    ports:
+      - '26656:26656'
+      - '26657:26657'
+      - '1317:1317'
+      - '9090:9090'
+      - '9091:9091'
+    environment:
+      - MONIKER=node_1
+      - CHAIN_JSON=https://raw.githubusercontent.com/cosmos/chain-registry/master/testnets/lavatestnet/chain.json
+      - COSMOVISOR_ENABLED=1
+      - DAEMON_RESTART_AFTER_UPGRADE=true
+      - DAEMON_ALLOW_DOWNLOAD_BINARIES=true
+    profiles: ["node"]
+
+  lava-node:
+    #image: ghcr.io/akash-network/cosmos-omnibus:v0.3.34-lavanet-v0.3.0
+    ports:
+      - "19900-20999:19900-20999"
+    environment:
+      - MONIKER=node_1
+      - CHAIN_JSON=https://raw.githubusercontent.com/cosmos/chain-registry/master/testnets/lavatestnet/chain.json
+      - COSMOVISOR_ENABLED=1
+      - DAEMON_RESTART_AFTER_UPGRADE=true
+      - DAEMON_ALLOW_DOWNLOAD_BINARIES=true
+      # config for provider: better define in an env file
+      # (dfeault values for illustration)
+      #- PROVIDER_YML=${PROVIDER_YML:-provider1-ETH1.yml}
+      #- PROVIDER_FROM=${PROVIDER_FROM:-provider1}
+      #- PROVIDER_CONNECTIONS=${PROVIDER_CONNECTIONS:-35}
+      #- PROVIDER_NODE=${PROVIDER_NODE:-http://127.0.0.1:26657}
+      #- PROIVDER_CHAIN_ID=${PROVIDER_CHAIN_ID:-lava-testnet-1}
+      #- PROVIDER_GEOLOCATION=${PROVIDER_GEOLOCATION:-2}
+      #- PROVIDER_LOG_LEVEL=${PROVIDER_LOG_LEVEL:-warn}
+    command: [
+        "cosmovisor", "run", "start", "rpcprovider", "${PROVIDER_YML}",
+        "--from", "${PROVIDER_FROM}",
+        "--parallel-connections", "${PROVIDER_CONNECTIONS}",
+        "--chain-id", "${PROVDER_CHAIN_ID}",
+        "--geolocation", "${PROVIDER_GEOLOCATION}",
+        "--log_level", "${PROVIDER_LOG_LEVEL}",
+        "--node", "${PROVIDER_NODE}"
+        ]
+    volumes:
+      - ./node-keyring-test:/root/.lava/keyring-test
+      - ./node-provider:/root/config
+    profiles: ["provider"]

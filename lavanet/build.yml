@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+  node_1:
+    build:
+      context: ../
+      args:
+        PROJECT: lavanet
+        PROJECT_BIN: lavad
+        VERSION: v0.3.0
+        REPOSITORY: https://github.com/lavanet/lava
+        NAMESPACE: LAVAD
+        PROJECT_DIR: .lava
+        GOLANG_VERSION: 1.18.2-buster
+        BUILD_CMD: make build
+        BUILD_PATH: build
+    ports:
+      - '26656:26656'
+      - '26657:26657'
+      - '1317:1317'
+      - '9090:9090'
+      - '9091:9091'
+    environment:
+      - MONIKER=node_1
+      - CHAIN_JSON=https://raw.githubusercontent.com/cosmos/chain-registry/master/testnets/lavatestnet/chain.json
+      - COSMOVISOR_ENABLED=1
+      - DAEMON_RESTART_AFTER_UPGRADE=true
+      - DAEMON_ALLOW_DOWNLOAD_BINARIES=true
+
+    env_file:
+      - ../.env
